@@ -2,6 +2,7 @@
 import rclpy
 from rclpy.node import Node
 from grsim_ros_bridge_msgs.msg import SSL
+from component import Robot
 
 class TestSSL(Node):
     def __init__(self):
@@ -12,9 +13,12 @@ class TestSSL(Node):
 
     def timer_callback(self):
         msg = SSL()
-        msg.cmd_vel.linear.x = 20.0
-        self.publisher.publish(msg)
-        self.get_logger().info('Publishing: %s' % msg)
+        # msg.cmd_vel.linear.x = 5.0
+        # msg.cmd_vel.linear.y = 5.0
+        # self.publisher.publish(msg)
+        # self.get_logger().info('Publishing: %s' % msg)
+        my_robot = Robot("blue",0,msg)
+        self.publisher.publish(my_robot.sendCommand(0,0,0))
 
 def main(args=None):
     rclpy.init(args=args)

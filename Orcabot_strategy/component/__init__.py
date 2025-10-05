@@ -1,0 +1,1 @@
+from component.robot import Robot
