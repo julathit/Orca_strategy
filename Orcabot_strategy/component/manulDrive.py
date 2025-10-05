@@ -4,10 +4,10 @@ from Orcabot_strategy.component import Robot
 
 class manulDrive:
     
-    def __init__(self,Test_ssl,team: str,robotindex: int):
+    def __init__(self,Test_ssl):
         pygame.init()
         self.Test_ssl = Test_ssl
-        self.robot = Robot(Test_ssl,team,robotindex)
+        self.robot = Robot(Test_ssl)
         # Set up the display
         width, height = 110, 5
         self.screen = pygame.display.set_mode((width, height))

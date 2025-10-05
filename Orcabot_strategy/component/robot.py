@@ -4,10 +4,8 @@ from rclpy.node import Node
 from grsim_ros_bridge_msgs.msg import SSL
 
 class Robot:
-    def __init__(self,Test_ssl: Node,team:str, rid: int):
-        self.id: int = rid
+    def __init__(self,Test_ssl: Node):
         self.role = None
-        self.team = team
         self.Test_ssl = Test_ssl
         
         self.ssl_msg: SSL = SSL()
@@ -38,4 +36,4 @@ class Robot:
         self.ssl_msg.dribbler = dribbler
         # print(self.ssl_msg)
         self.Test_ssl.publisher.publish(self.ssl_msg)
-        self.Test_ssl.get_logger().info('Publishing: %s' % self.ssl_msg)
+        # self.Test_ssl.get_logger().info('Publishing: %s' % self.ssl_msg)
