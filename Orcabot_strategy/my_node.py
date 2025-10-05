@@ -13,13 +13,13 @@ class TestSSL(Node):
         self.publisher = self.create_publisher(SSL, '/robot_blue_0/cmd', 10)
         timer_period = 0.02  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
-        self.my_robot = Robot("blue",0)
-        self.manulD = C_manulDrive(self,0)
+        self.my_robot = Robot(self,"blue",0)
+        self.manulD = C_manulDrive(self,"blue",0)
         
     def timer_callback(self):
 
         self.manulD.execute()
-        # self.my_robot.sendCommand(self,5.0,0.0,0.0)
+        # self.my_robot.sendCommand(5.0,0.0,0.0)
 
 
 def main(args=None):

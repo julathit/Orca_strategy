@@ -1,0 +1,29 @@
+[33mcommit 46be7821e15e2d1c509762d1271d9efca6f461fd[m[33m ([m[1;36mHEAD -> [m[1;32mnew[m[33m, [m[1;31morigin/new[m[33m)[m
+Author: julathit <newn8684@gmail.com>
+Date:   Sun Oct 5 17:18:03 2025 +0700
+
+    add robot class and manual drive implementation
+
+[33mcommit fc6c1345335a6e1f56e2f061364635b92fffc88d[m
+Author: julathit <newn8684@gmail.com>
+Date:   Sun Oct 5 15:22:33 2025 +0700
+
+    make robot component
+
+[33mcommit 2297a81d7c75ccd1c8c4f8acb8c947af6c9fb58f[m[33m ([m[1;32mmaster[m[33m)[m
+Author: julathit <newn8684@gmail.com>
+Date:   Thu Oct 2 20:06:44 2025 +0700
+
+    first commit
+
+[33mcommit 3a32d6a8f38a28a32a8b53408b057d0f32de4992[m
+Author: new <82647501+julathit@users.noreply.github.com>
+Date:   Thu Oct 2 19:47:43 2025 +0700
+
+    Update README.md
+
+[33mcommit 49486ff12afffa1aa01a7ae2cf60f7ab66c41aea[m
+Author: new <82647501+julathit@users.noreply.github.com>
+Date:   Thu Oct 2 19:47:05 2025 +0700
+
+    Initial commit
