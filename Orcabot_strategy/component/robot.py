@@ -3,10 +3,15 @@ import rclpy
 from rclpy.node import Node
 from grsim_ros_bridge_msgs.msg import SSL
 
+from Orcabot_strategy.component.vission_handler import vission_handler as C_vission_handler
+
 class Robot:
-    def __init__(self,Test_ssl: Node):
+    def __init__(self,Test_ssl: Node,team: str,Id: int):
         self.role = None
         self.Test_ssl = Test_ssl
+        
+        self.team = team
+        self.Id = Id
         
         self.ssl_msg: SSL = SSL()
         
@@ -14,19 +19,40 @@ class Robot:
         return self.role
 
     def getPosition(self) -> np.array:
-        ...
+        
+        if self.team == "blue":
+            data = C_vission_handler().robot_tBlue
+        else:
+            data = C_vission_handler().robot_tYellow
+        
+        x,y = data[self.Id].x, data[self.Id].y
+        
+        return np.array([x,y])
 
     def getOrientation(self) -> float:
-        ...
+        
+        if self.team == "blue":
+            data = C_vission_handler().robot_tBlue
+        else:
+            data = C_vission_handler().robot_tYellow
+            
+        orientation = data[self.Id].orientation
+        return orientation
 
     def __distanceToPoint(self, point: np.array) -> float:
-        ...
+        return np.linalg.norm(self.getPosition() - point)
 
     def __angToPoint(self, point: np.array) -> float:
-        ...
-            
-    def __distance(self, origins: np.array , points: list) -> list:
-        ...
+        current_pos = self.getPosition()
+    
+        delta = point - current_pos
+        
+        dy = delta[1]
+        dx = delta[0]
+        
+        angle_radians = np.arctan2(dy, dx)
+        
+        return angle_radians            
             
     def sendCommand(self,x: float, y: float, z: float, kickPower = False, dribbler = False):
         self.ssl_msg.cmd_vel.angular.z = z

@@ -1,1 +1,0 @@
-import Orcabot_strategy.component as component

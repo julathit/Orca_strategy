@@ -17,6 +17,7 @@ class vission_handler:
         self.num_of_robot = 6
         self.robot_tBlue = {i: SSLDetectionRobot() for i in range(self.num_of_robot)}
         self.robot_tYellow = {i: SSLDetectionRobot() for i in range(self.num_of_robot)}
+        self.ball = SSLDetectionBall
         self.initialized = True # Mark as initialized
 
     def data_pack(self,d_frame: SSLDetectionFrame) -> None:
@@ -31,3 +32,6 @@ class vission_handler:
             id_robot = robot.robot_id
             if 0 <= id_robot < self.num_of_robot:
                 self.robot_tYellow[id_robot] = robot
+        
+        if len(d_frame.balls) > 0:
+                self.ball = d_frame.balls
