@@ -9,14 +9,13 @@ class PID:
         self.prev_error = 0
 
     def compute(self, setpoint: np.array, measurement: np.array, dt: float) -> np.array:
-        error = setpoint - measurement
+        error = setpoint
         self.integral += error * dt
         derivative = (error - self.prev_error) / dt if dt > 0 else 0
         output = self.Kp * error + self.Ki * self.integral + self.Kd * derivative
         self.prev_error = error
         return output
     
-import numpy as np
 
 # S is vector that tell distace to go and oretation to make <dx,dy,dom>
 # V is vector speed each compo is <vx,vy,om> speed of robot
