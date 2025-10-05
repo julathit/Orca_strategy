@@ -1,2 +1,3 @@
 from Orcabot_strategy.component.robot import Robot
 from Orcabot_strategy.component.manulDrive import manulDrive as  C_manulDrive
+from Orcabot_strategy.component.vission_handler import vission_handler as C_vission_handler

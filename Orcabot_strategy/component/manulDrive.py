@@ -4,10 +4,10 @@ from Orcabot_strategy.component import Robot
 
 class manulDrive:
     
-    def __init__(self,Test_ssl,robotindex: int):
+    def __init__(self,Test_ssl):
         pygame.init()
         self.Test_ssl = Test_ssl
-        self.robot = Robot("blue",robotindex)
+        self.robot = Robot(Test_ssl)
         # Set up the display
         width, height = 110, 5
         self.screen = pygame.display.set_mode((width, height))
@@ -73,7 +73,7 @@ class manulDrive:
             horizontal = 0.0
             rotation = 0.0
             
-        self.robot.sendCommand(self.Test_ssl,vertical,horizontal,rotation,kick)
+        self.robot.sendCommand(vertical,horizontal,rotation,kick)
 
         # Update the display
         pygame.display.flip()
