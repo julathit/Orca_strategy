@@ -30,16 +30,15 @@ class TestSSL(Node):
         self.timer = self.create_timer(timer_period, self.timer_callback)
         self.my_robot = Robot(self)
         self.manulD = C_manulDrive(self)
-        self.vission = C_vission_handler()
         
     def timer_callback(self):
 
         self.manulD.execute()
-        print(self.vission.robot_tBlue[0])
+        print(C_vission_handler().robot_tBlue[0]) 
         # self.my_robot.sendCommand(5.0,0.0,0.0)
         
     def subscription_callback(self,msg):
-        self.vission.data_pack(msg)
+        C_vission_handler().data_pack(msg)
 
 
 def main(args=None):
