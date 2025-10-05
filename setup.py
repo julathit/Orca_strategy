@@ -20,7 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'Orcabot_strategy = Orcabot_strategy.my_node:main'
+            'Orcabot_strategy = Orcabot_strategy.my_node:main',
         ],
     },
 )

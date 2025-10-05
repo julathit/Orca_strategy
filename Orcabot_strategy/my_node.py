@@ -1,7 +1,11 @@
 #! /usr/bin/env python3
+
+
 import rclpy
 from rclpy.node import Node
 from grsim_ros_bridge_msgs.msg import SSL
+from Orcabot_strategy.component import Robot
+from Orcabot_strategy.component import C_manulDrive
 
 class TestSSL(Node):
     def __init__(self):
@@ -9,12 +13,14 @@ class TestSSL(Node):
         self.publisher = self.create_publisher(SSL, '/robot_blue_0/cmd', 10)
         timer_period = 0.02  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
-
+        self.my_robot = Robot("blue",0)
+        self.manulD = C_manulDrive(self,0)
+        
     def timer_callback(self):
-        msg = SSL()
-        msg.cmd_vel.linear.x = 20.0
-        self.publisher.publish(msg)
-        self.get_logger().info('Publishing: %s' % msg)
+
+        self.manulD.execute()
+        # self.my_robot.sendCommand(self,5.0,0.0,0.0)
+
 
 def main(args=None):
     rclpy.init(args=args)
