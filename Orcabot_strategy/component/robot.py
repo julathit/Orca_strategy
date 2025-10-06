@@ -4,6 +4,12 @@ from rclpy.node import Node
 from grsim_ros_bridge_msgs.msg import SSL
 from Orcabot_strategy.utils.simpleMovementTools import SToV as SToVCal
 from Orcabot_strategy.utils.simpleMovementTools import PID as PIDcal
+from Orcabot_strategy.utils.a_star import a_star as f_a_star
+from Orcabot_strategy.utils.a_star import h_euclidean as h
+from Orcabot_strategy.utils.a_star import initial_node as f_initial_node
+from Orcabot_strategy.utils.state import state as State
+from Orcabot_strategy.utils.a_star import reconstruct_path as f_reconstruct_path
+
 import time
 
 from Orcabot_strategy.component.vission_handler import vission_handler as C_vission_handler
@@ -23,11 +29,17 @@ class Robot:
             data = C_vission_handler().robot_tBlue
         else:
             data = C_vission_handler().robot_tYellow
+        self.data = data
         x,y = data[self.Id].x, data[self.Id].y
         o = data[self.Id].orientation
         self.oldPosition = np.array([x,y,o])
         self.oldTime = time.time()
-        self.pid = PIDcal(Kp=np.array([1.8,1,3]),Ki=np.array([0.04,0.0,0.0]),Kd=np.array([0.9,0,0.0]))
+        # self.pid = PIDcal(Kp=np.array([1.8,2,3]),Ki=np.array([0.04,0.0,0.0]),Kd=np.array([2,0,0.0]))
+        
+        #a_star 
+        self.pid = PIDcal(Kp=np.array([1.8,1,1]),Ki=np.array([0.04,0,0]),Kd=np.array([1.5,0,0.0]))
+        self.radius = 150
+        self.ds = 10
         
     def getRole(self):
         return self.role
@@ -154,3 +166,19 @@ class Robot:
             self.sendCommand(0.0,0.0,0.0)
         else:
             self.sendCommand(vx,vy,vz)
+            
+    def moveToPointWithA_star(self,point: np.array,angle = None):
+        first_state = State(self.getPosition(),point)
+        robot_lange = list(range(C_vission_handler().num_of_robot ))
+        robot_lange.remove(self.Id)
+        Obs_list = []
+        for i in robot_lange:
+            Obs_list.append(np.array([self.data[i].x,self.data[i].y]))
+        
+        node, _ = f_a_star(first_state,h,Obs_list,self.radius,point,self.ds)
+        path = f_reconstruct_path(node)
+        if len(path) > 2:
+            position = path[1].pos
+        else:
+            position = point
+        self.MoveToPointWithPID(position,angle)

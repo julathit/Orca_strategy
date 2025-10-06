@@ -29,7 +29,7 @@ def initial_node(node: Node) -> np.array:
     current_node = node
     while current_node:
         current_node = current_node.parent
-    return current_node.current.pos
+    return current_node.parent.pos
 
 def a_star(init: 'state', h: Callable[[np.array, np.array], float], obstacle: list, radius: float, goal: np.array, ds: float) -> Tuple['Node', int]:
     init_node = Node(init, None, 0, 0)
