@@ -156,7 +156,7 @@ class Robot:
         self.oldTime = currentTime
         return v, dt
     
-    def MoveToPointWithPID(self,point: np.array,angle = None):
+    def MoveToPointWithPID(self,point: np.array,angle = None): 
         messure, dt = self.messureSpeed()
         setpoint = self.MotionMapping(point,angle)
         output = self.pid.compute(setpoint,messure,dt)
@@ -169,21 +169,25 @@ class Robot:
             self.sendCommand(vx,vy,vz)
             
     def moveToPointWithA_star(self, point: np.array, angle=None):
+        #NOTE: this algorithm need multitrade and cut of depth because when obs on in way or ray unable to hit robot stack nate so fix it 
         current_pos = self.getPosition()
         
+         # NOTE: Using 'hasattr' here is fine, but initializing in __init__ is cleaner.
         if not hasattr(self, '_a_star_path'):
             self._a_star_path = []
         if not hasattr(self, '_target_point_cache'):
             self._target_point_cache = None
 
-        robot_lange = list(range(C_vission_handler().num_of_robot))
-        robot_lange.remove(self.Id)
         Obs_list = []
         dataB = C_vission_handler().robot_tBlue
         dataY = C_vission_handler().robot_tYellow
-        for i in robot_lange:
+        for i in range(len(dataB)):
+            if (i == self.Id) and (self.team == "blue"):
+                continue
             Obs_list.append(np.array([dataB[i].x, dataB[i].y]))
         for i in range(len(dataY)):
+            if (i == self.Id) and (self.team == "yellow"):
+                continue
             Obs_list.append(np.array([dataY[i].x, dataY[i].y]))
 
         target_changed = not np.array_equal(self._target_point_cache, point)
