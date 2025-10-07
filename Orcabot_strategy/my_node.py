@@ -1,5 +1,5 @@
 #! /usr/bin/env python3
-
+import numpy as np
 import rclpy
 from rclpy.node import Node
 from grsim_ros_bridge_msgs.msg import SSL
@@ -28,13 +28,17 @@ class TestSSL(Node):
         self.sub = self.create_subscription(SSLDetectionFrame, "/vision_n", self.subscription_callback, vision_qos_profile )
         timer_period = 0.02  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
-        self.my_robot = Robot(self)
-        self.manulD = C_manulDrive(self)
+        self.my_robot = Robot(self,team,Id)
+        # self.manulD = C_manulDrive(self,team,Id)
         
     def timer_callback(self):
 
-        self.manulD.execute()
-        print(C_vission_handler().robot_tBlue[0]) 
+        # self.manulD.execute()
+        self.my_robot.moveToPointWithA_star(np.array([0,0]),0)
+        # print(self.my_robot.messureSpeed())
+        # self.manulD.execute()
+        # print(self.my_robot.getPosition()[0],self.my_robot.getPosition()[1])
+        # print(C_vission_handler().ball)
         # self.my_robot.sendCommand(5.0,0.0,0.0)
         
     def subscription_callback(self,msg):

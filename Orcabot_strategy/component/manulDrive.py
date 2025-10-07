@@ -4,10 +4,10 @@ from Orcabot_strategy.component import Robot
 
 class manulDrive:
     
-    def __init__(self,Test_ssl):
+    def __init__(self,Test_ssl,team:str,Id:int):
         pygame.init()
         self.Test_ssl = Test_ssl
-        self.robot = Robot(Test_ssl)
+        self.robot = Robot(Test_ssl,team,Id)
         # Set up the display
         width, height = 110, 5
         self.screen = pygame.display.set_mode((width, height))
@@ -38,35 +38,26 @@ class manulDrive:
                     sys.exit()
                 elif event.key not in self.keys_pressed:
                     self.keys_pressed.add(event.key)
-                    print(f"Key pressed: {pygame.key.name(event.key)}")
                 if event.key == pygame.K_SPACE:
-                    print('spaced')
                     kick = True
             elif event.type == pygame.KEYUP:
                 # Check if the released key was being tracked
                 if event.key in self.keys_pressed:
                     self.keys_pressed.remove(event.key)
-                    print(f"Key released: {pygame.key.name(event.key)}",'stop')
                     kick = False
 
         # Check if the 'W' key is currently pressed
         if pygame.K_w in self.keys_pressed:
-            print("W", end="", flush = True)
             vertical = self.moveSpeed
         if pygame.K_a in self.keys_pressed:
-            print("A", end="", flush=True)
             horizontal = self.moveSpeed
         if pygame.K_s in self.keys_pressed:
-            print("S", end="" , flush=True)
             vertical = -self.moveSpeed
-        if pygame.K_d in self.keys_pressed:
-            print("D", end="", flush=True)    
+        if pygame.K_d in self.keys_pressed:    
             horizontal = -self.moveSpeed
-        if pygame.K_k in self.keys_pressed:
-            print("k", end="", flush=True)    
+        if pygame.K_k in self.keys_pressed:   
             rotation = self.rotationalSpeed
-        if pygame.K_l in self.keys_pressed:
-            print("l", end="", flush=True)    
+        if pygame.K_l in self.keys_pressed:    
             rotation = -self.rotationalSpeed
         if len(self.keys_pressed) == 0:
             vertical = 0.0
