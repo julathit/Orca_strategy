@@ -34,7 +34,7 @@ class TestSSL(Node):
     def timer_callback(self):
 
         # self.manulD.execute()
-        self.my_robot.moveToPointWithA_star(np.array([500.0,500.0]))
+        self.my_robot.moveToPointWithA_star(np.array([0,0]),0)
         # print(self.my_robot.messureSpeed())
         # self.manulD.execute()
         # print(self.my_robot.getPosition()[0],self.my_robot.getPosition()[1])

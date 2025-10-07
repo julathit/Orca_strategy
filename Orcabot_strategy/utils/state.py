@@ -14,7 +14,7 @@ class state:
         
         # config
         self.ang = np.pi/4
-        self.step_size = 300
+        self.step_size = 400
     
     def is_goal(self,goal: np.array,ds: float) -> bool:
         dis = np.linalg.norm(self.pos - goal)

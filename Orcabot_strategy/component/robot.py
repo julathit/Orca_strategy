@@ -34,12 +34,14 @@ class Robot:
         o = data[self.Id].orientation
         self.oldPosition = np.array([x,y,o])
         self.oldTime = time.time()
-        # self.pid = PIDcal(Kp=np.array([1.8,2,3]),Ki=np.array([0.04,0.0,0.0]),Kd=np.array([2,0,0.0]))
+        # self.pid = PIDcal(Kp=np.array([1,1,2]),Ki=np.array([0.005,0.005,0.0]),Kd=np.array([0.4,0.4,0.05]))
+        self.pid = PIDcal(Kp=np.array([2,2,2]),Ki=np.array([0.005,0.005,0.0]),Kd=np.array([0.4,0.4,0.05]))
+        # self.pid = PIDcal(Kp=np.array([0,0,2]),Ki=np.array([0,0,0.0]),Kd=np.array([0,0,0.05]))
         
         #a_star 
-        self.pid = PIDcal(Kp=np.array([1.8,1,1]),Ki=np.array([0.04,0,0]),Kd=np.array([1.5,0,0.0]))
+        # self.pid = PIDcal(Kp=np.array([1.8,1,1]),Ki=np.array([0.04,0,0]),Kd=np.array([1.5,0,0.0]))
         self.radius = 150
-        self.ds = 10
+        self.ds = 50
         
     def getRole(self):
         return self.role
@@ -88,7 +90,7 @@ class Robot:
         self.ssl_msg.dribbler = dribbler
         # print(self.ssl_msg)
         self.Test_ssl.publisher.publish(self.ssl_msg)
-        # self.Test_ssl.get_logger().info('Publishing: %s' % self.ssl_msg)
+        self.Test_ssl.get_logger().info('Publishing: %s' % self.ssl_msg)
         
         
     def nearPoint(self, point: np.array, threshold: int = 20) -> bool:
@@ -137,7 +139,7 @@ class Robot:
             dom += 2 * np.pi
 
         S = np.array([dx,dy,dom])
-        print
+        
         V = SToVCal(S,o)/5
         vx, vy, yaw = V
         return np.array([vx,vy,yaw*20])
@@ -161,24 +163,95 @@ class Robot:
         vx, vy, vz = output
         vxs, vys, vzs = setpoint
 
-        print(vx,vy,vz)
-        if self.nearPoint(point,100):
+        if self.nearPoint(point,self.ds):
             self.sendCommand(0.0,0.0,0.0)
         else:
             self.sendCommand(vx,vy,vz)
             
-    def moveToPointWithA_star(self,point: np.array,angle = None):
-        first_state = State(self.getPosition(),point)
-        robot_lange = list(range(C_vission_handler().num_of_robot ))
+    def moveToPointWithA_star(self, point: np.array, angle=None):
+        current_pos = self.getPosition()
+        
+        if not hasattr(self, '_a_star_path'):
+            self._a_star_path = []
+        if not hasattr(self, '_target_point_cache'):
+            self._target_point_cache = None
+
+        robot_lange = list(range(C_vission_handler().num_of_robot))
         robot_lange.remove(self.Id)
         Obs_list = []
+        dataB = C_vission_handler().robot_tBlue
+        dataY = C_vission_handler().robot_tYellow
         for i in robot_lange:
-            Obs_list.append(np.array([self.data[i].x,self.data[i].y]))
+            Obs_list.append(np.array([dataB[i].x, dataB[i].y]))
+        for i in range(len(dataY)):
+            Obs_list.append(np.array([dataY[i].x, dataY[i].y]))
+
+        target_changed = not np.array_equal(self._target_point_cache, point)
         
-        node, _ = f_a_star(first_state,h,Obs_list,self.radius,point,self.ds)
-        path = f_reconstruct_path(node)
-        if len(path) > 2:
-            position = path[1].pos
+        if target_changed or not self._a_star_path:
+            
+            self._target_point_cache = point
+            
+            first_state = State(current_pos, point)
+            
+            node, _ = f_a_star(first_state, h, Obs_list, self.radius, point, self.ds)
+            self._a_star_path = f_reconstruct_path(node)
+            
+        WAYPOINT_TOLERANCE = self.ds * 3
+
+        if len(self._a_star_path) > 1:
+            
+            while len(self._a_star_path) > 1 and np.linalg.norm(current_pos - self._a_star_path[1].pos) < WAYPOINT_TOLERANCE:
+                self._a_star_path.pop(0)
+                
+            if len(self._a_star_path) > 1:
+                next_waypoint_position = self._a_star_path[1].pos
+            else:
+                next_waypoint_position = point 
+        
+        elif len(self._a_star_path) == 1:
+            next_waypoint_position = point
+            self._target_point_cache = None
+            self._a_star_path = []
+            
         else:
-            position = point
-        self.MoveToPointWithPID(position,angle)
+            next_waypoint_position = current_pos
+            
+        path_vector = next_waypoint_position - current_pos
+        path_distance = np.linalg.norm(path_vector)
+
+        if path_distance > 1e-6:
+            rot = np.arctan2(path_vector[1], path_vector[0])
+            
+            checker_state = State(current_pos, next_waypoint_position)
+            
+            rayHit = checker_state.is_cut_obstacle_CORRECTED(
+                Obs_list, 
+                path_distance,
+                self.radius, 
+                rot
+            )
+
+            if rayHit:
+                self._a_star_path = []
+                next_waypoint_position = current_pos
+        
+        self.MoveToPointWithPID(next_waypoint_position, angle)
+        
+    # def moveToPointWithA_star(self,point: np.array,angle = None):
+    #     first_state = State(self.getPosition(),point)
+    #     robot_lange = list(range(C_vission_handler().num_of_robot ))
+    #     robot_lange.remove(self.Id)
+    #     Obs_list = []
+    #     for i in robot_lange:
+    #         Obs_list.append(np.array([self.data[i].x,self.data[i].y]))
+    #     path = []
+        
+    #     node, _ = f_a_star(first_state,h,Obs_list,self.radius,point,self.ds)
+    #     path = f_reconstruct_path(node)
+        
+    #     if len(path) > 2:
+    #         position = path[1].pos
+    #     else:
+    #         position = point
+    #     self.MoveToPointWithPID(position,angle)
