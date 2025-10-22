@@ -90,7 +90,7 @@ class Robot:
         self.ssl_msg.dribbler = dribbler
         # print(self.ssl_msg)
         self.Test_ssl.publisher.publish(self.ssl_msg)
-        self.Test_ssl.get_logger().info('Publishing: %s' % self.ssl_msg)
+        # self.Test_ssl.get_logger().info('Publishing: %s' % self.ssl_msg)
         
         
     def nearPoint(self, point: np.array, threshold: int = 20) -> bool:
