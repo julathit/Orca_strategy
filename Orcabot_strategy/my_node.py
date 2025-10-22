@@ -7,6 +7,8 @@ from Orcabot_strategy.component import Robot
 from Orcabot_strategy.component import C_manulDrive
 from Orcabot_strategy.component import C_vission_handler
 
+from robocup_ssl_msgs.msg import Referee
+
 from krssg_ssl_msgs.msg import SSLDetectionFrame
 from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy 
 
@@ -26,6 +28,7 @@ class TestSSL(Node):
         team = "blue"
         self.publisher = self.create_publisher(SSL, f"/robot_{team}_{Id}/cmd", 10)
         self.sub = self.create_subscription(SSLDetectionFrame, "/vision_n", self.subscription_callback, vision_qos_profile )
+        self.game_sub = self.create_subscription(Referee, "/referee",self.gameControl_callback, 10)
         timer_period = 0.02  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
         self.my_robot = Robot(self,team,Id)
@@ -34,16 +37,21 @@ class TestSSL(Node):
     def timer_callback(self):
 
         # self.manulD.execute()
+        # self.my_robot.moveToPointWithA_star(np.array([0,0]),0)
         self.my_robot.moveToPointWithA_star(np.array([0,0]),0)
         # print(self.my_robot.messureSpeed())
         # self.manulD.execute()
         # print(self.my_robot.getPosition()[0],self.my_robot.getPosition()[1])
         # print(C_vission_handler().ball)
         # self.my_robot.sendCommand(5.0,0.0,0.0)
+
         
     def subscription_callback(self,msg):
         C_vission_handler().data_pack(msg)
-
+    
+    def gameControl_callback(self,msg: Referee):
+        # implement C_gameControl_handler
+        ...
 
 def main(args=None):
     rclpy.init(args=args)
