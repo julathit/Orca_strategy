@@ -24,7 +24,7 @@ vision_qos_profile = QoSProfile(
 class TestSSL(Node):
     def __init__(self):
         super().__init__('test_ssl')
-        Id = 0
+        Id = 1
         team = "blue"
         self.publisher = self.create_publisher(SSL, f"/robot_{team}_{Id}/cmd", 10)
         self.sub = self.create_subscription(SSLDetectionFrame, "/vision_n", self.subscription_callback, vision_qos_profile )
@@ -32,7 +32,7 @@ class TestSSL(Node):
         timer_period = 0.02  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
         self.my_robot = Robot(self,team,Id)
-        # self.manulD = C_manulDrive(self,team,Id)
+        # self.manulD = C_manulDrive(self,team,1)
         
     def timer_callback(self):
 
